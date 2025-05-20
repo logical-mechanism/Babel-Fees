@@ -30,7 +30,7 @@ pub type BabelFee {
 }
 
 pub type BabelFeeDatum {
-  // owner of this reputation
+  // owner of this babel fee utxo
   keeper: VerificationKeyHash,
   // unique identifier
   pointer: AssetName,
