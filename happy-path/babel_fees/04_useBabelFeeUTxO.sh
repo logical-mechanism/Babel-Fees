@@ -34,6 +34,10 @@ babel_fee_policy_id=$(cat ../../hashes/babel_fees.hash)
 payment_policy_id=$(jq -r '.fields[3].fields[0].bytes' ../data/fixed-babel-fee-datum.json)
 payment_token_name=$(jq -r '.fields[3].fields[1].bytes' ../data/fixed-babel-fee-datum.json)
 
+receiver_amt=1234567
+receiver_output="${receiver_address} + ${receiver_amt}"
+echo Receiver Output: ${receiver_output}
+
 echo -e "\033[0;36m Gathering User UTxO Information  \033[0m"
 ${cli} conway query utxo \
     ${network} \
@@ -92,10 +96,10 @@ collat_utxo=$(jq -r 'keys[0]' ../tmp/collat_utxo.json)
 echo "Collateral UTxO:" ${collat_utxo}
 
 if [ $((${current_user_payment} - ${payment_amt})) -eq 0 ]; then
-    user_output="${user_address} + ${current_user_lovelace}"
+    user_output="${user_address} + $((${current_user_lovelace} - ${receiver_amt}))"
 else
     user_payment_asset="$((${current_user_payment} - ${payment_amt})) ${payment_policy_id}.${payment_token_name}"
-    user_output="${user_address} + ${current_user_lovelace} + ${user_payment_asset}"
+    user_output="${user_address} + $((${current_user_lovelace} - ${receiver_amt})) + ${user_payment_asset}"
 fi
 echo User Output: ${user_output}
 
@@ -114,6 +118,7 @@ ${cli} conway transaction build-raw \
     --spending-reference-tx-in-inline-datum-present \
     --spending-reference-tx-in-redeemer-file ../data/use-redeemer.json \
     --spending-reference-tx-in-execution-units="${execution_units}" \
+    --tx-out="${receiver_output}" \
     --tx-out="${user_output}" \
     --tx-out="${fee_script_output}" \
     --tx-out-inline-datum-file ../data/fixed-babel-fee-datum.json \
@@ -158,10 +163,10 @@ fee_script_output="${babel_fee_script_address} + $((${current_fee_lovelace} - ${
 echo Babel Fee Output: ${fee_script_output}
 
 if [ $((${current_user_payment} - ${payment_amt})) -eq 0 ]; then
-    user_output="${user_address} + ${current_user_lovelace}"
+    user_output="${user_address} + $((${current_user_lovelace} - ${receiver_amt}))"
 else
     user_payment_asset="$((${current_user_payment} - ${payment_amt})) ${payment_policy_id}.${payment_token_name}"
-    user_output="${user_address} + ${current_user_lovelace} + ${user_payment_asset}"
+    user_output="${user_address} + $((${current_user_lovelace} - ${receiver_amt})) + ${user_payment_asset}"
 fi
 echo User Output: ${user_output}
 
@@ -178,6 +183,7 @@ ${cli} conway transaction build-raw \
     --spending-reference-tx-in-inline-datum-present \
     --spending-reference-tx-in-redeemer-file ../data/use-redeemer.json \
     --spending-reference-tx-in-execution-units="${babel_fee_execution_units}" \
+    --tx-out="${receiver_output}" \
     --tx-out="${user_output}" \
     --tx-out="${fee_script_output}" \
     --tx-out-inline-datum-file  ../data/fixed-babel-fee-datum.json \
