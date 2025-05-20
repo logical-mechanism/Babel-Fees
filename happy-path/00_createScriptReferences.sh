@@ -60,7 +60,7 @@ do
     --tx-out-reference-script-file ${contract} \
     --fee 1000000
 
-    size=$(jq -r '.cborHex' ${contract} | awk '{print length($0)*8}')
+    size=$(jq -r '.cborHex' ${contract} | awk '{print length($0)*15/2}')
 
     FEE=$(${cli} conway transaction calculate-min-fee \
         --tx-body-file ./tmp/tx.draft \

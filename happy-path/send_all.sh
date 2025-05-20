@@ -5,11 +5,11 @@ set -e
 source .env
 
 # Addresses
-sender_path="wallets/keeper-wallet/"
+sender_path="wallets/reference-wallet/"
 sender_address=$(cat ${sender_path}payment.addr)
-# receiver_address=$(cat ${sender_path}payment.addr)
+receiver_address=$(cat ${sender_path}payment.addr)
 # receiver_address=$(cat wallets/reference-wallet/payment.addr)
-receiver_address="addr_test1qrwejm9pza929cedhwkcsprtgs8l2carehs8z6jkse2qp344c43tmm0md55r4ufmxknr24kq6jkvt6spq60edeuhtf4sn2scds"
+# receiver_address="addr_test1qrwejm9pza929cedhwkcsprtgs8l2carehs8z6jkse2qp344c43tmm0md55r4ufmxknr24kq6jkvt6spq60edeuhtf4sn2scds"
 
 echo -e "\033[0;36m Gathering UTxO Information  \033[0m"
 ${cli} conway query utxo \
