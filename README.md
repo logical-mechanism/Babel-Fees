@@ -14,3 +14,5 @@ A fee user will select some fee provider UTxO to use inside of a transaction. Th
 - Tx fees increase when using this contract as it requires referencing the script CBOR which dominates the contract cost.
 - Price fluctuation may cause the C3 oracles to update resulting in the inability to reference a live oracle UTxO for a block.
 - Price oracles may not exist for every token.
+- OrcFax is not integrated yet!
+- Contract is not optmized.

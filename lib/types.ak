@@ -24,7 +24,7 @@ pub type AssetClass {
 
 pub type BabelFee {
   // use c3 here for the price
-  OracleRate { feed_vkh: ScriptHash, feed_pid: PolicyId, feed_tkn: AssetName }
+  C3OracleRate { feed_vkh: ScriptHash, feed_pid: PolicyId, feed_tkn: AssetName }
   // just set some fix price
   FixedRate { price: Int }
 }
@@ -46,7 +46,7 @@ pub fn get_babel_rate(
   validity_range: ValidityRange,
 ) -> Int {
   when babel_fee is {
-    OracleRate { feed_vkh, feed_pid, feed_tkn } -> {
+    C3OracleRate { feed_vkh, feed_pid, feed_tkn } -> {
       // we need to use the oracle feed so get the input's output
       expect Some(Input {
         output: Output { value, datum: InlineDatum(output_datum_data), .. },
