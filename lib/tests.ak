@@ -27,3 +27,13 @@ test fixed_rate_payment_amount_3() {
   // 0.250505 Tokens
   babel_fee == 250_505
 }
+
+test fixed_rate_payment_amount_4() {
+  // 0.339423 ADA
+  let fee: Int = 339_423
+  // token price in ADA to be paid at
+  let rate: Int = 1_000_000
+  let babel_fee: Int = 1_000_000 * fee / rate
+  // 0.339423 Tokens
+  babel_fee == 339_423
+}

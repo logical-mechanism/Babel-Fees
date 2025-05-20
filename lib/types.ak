@@ -23,7 +23,9 @@ pub type AssetClass {
 }
 
 pub type BabelFee {
+  // use c3 here for the price
   OracleRate { feed_vkh: ScriptHash, feed_pid: PolicyId, feed_tkn: AssetName }
+  // just set some fix price
   FixedRate { price: Int }
 }
 
@@ -32,7 +34,7 @@ pub type BabelFeeDatum {
   keeper: VerificationKeyHash,
   // unique identifier
   pointer: AssetName,
-  // determine the babel fee
+  // determine the babel fee type
   babel_fee: BabelFee,
   // asset class to be paid in
   asset_class: AssetClass,
@@ -45,7 +47,7 @@ pub fn get_babel_rate(
 ) -> Int {
   when babel_fee is {
     OracleRate { feed_vkh, feed_pid, feed_tkn } -> {
-      // we need to use the oracle feed
+      // we need to use the oracle feed so get the input's output
       expect Some(Input {
         output: Output { value, datum: InlineDatum(output_datum_data), .. },
         ..
@@ -60,10 +62,16 @@ pub fn get_babel_rate(
       } {
         feed_price
       } else {
-        // zero values will throw divide by zero errors
+        // use zero to force an error here
         0
       }
     }
-    FixedRate { price } -> price
+    FixedRate { price } ->
+      if price > 0 {
+        price
+      } else {
+        // use zero to force an error here
+        0
+      }
   }
 }

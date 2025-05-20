@@ -4,7 +4,7 @@ use aiken/interval.{
 }
 use cardano/transaction.{ValidityRange}
 
-/// A finite moment of time represented as simple start and end integers.
+/// A finite moment of time represented as start and end integers.
 pub type Moment {
   start: Int,
   end: Int,

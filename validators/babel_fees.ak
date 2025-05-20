@@ -1,4 +1,4 @@
-//// The babel fee contract.
+//// A hyperstructure babel fee contract.
 ////
 
 use aiken/collection/list
@@ -51,7 +51,7 @@ validator contract {
         // name. The output must be going to this contract.
         //
         and {
-          // operator and keeper must sign
+          // keeper must sign
           list.has(extra_signatories, keeper)?,
           // token name needs to be in the datum
           (pointer == token_name)?,
@@ -97,6 +97,7 @@ validator contract {
           // only valid utxos holding the nft
           let is_holding_token: Bool =
             assets.quantity_of(this_value, this_script, this_datum.pointer) == 1
+          //
           when redeemer is {
             Addition(extra) -> {
               // find the output that holds this nft
@@ -202,7 +203,7 @@ validator contract {
                 //
                 // Burn the token and get a signature from the keeper. This logic
                 // will allow updates, extraction, and removal. Update and extract
-                // will result in some new pointer.
+                // will result in some new pointer token.
                 //
                 and {
                   list.has(extra_signatories, keeper)?,
