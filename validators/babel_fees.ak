@@ -1,7 +1,8 @@
-//// The fee contract pays the fee for the reputation contract.
+//// The babel fee contract.
 ////
 
 use aiken/collection/list
+use aiken/math
 use aiken/option
 use aiken/primitive/bytearray
 use cardano/address.{Address, Script}
@@ -38,7 +39,7 @@ validator contract {
           reference_script,
         }): Option<Output> =
           search.for_output_by_token(outputs, policy_id, token_name)
-        // reputation datum needs to be validated so destruct it, do not validate the info_hash
+        // we need the keeper and pointer from the babel fee datum
         expect BabelFeeDatum { keeper, pointer, .. } = output_datum_data
         // make sure no dust tokens exist, ada is first then the token being minted
         expect [(_, _, _),
@@ -54,9 +55,9 @@ validator contract {
           list.has(extra_signatories, keeper)?,
           // token name needs to be in the datum
           (pointer == token_name)?,
-          // the reputation output cant have a ref script
+          // the output cant have a ref script
           option.is_none(reference_script)?,
-          // must be going to the reputation contract
+          // must be going to this contract
           (policy_id == output_hash)?,
           // must mint nft
           (policy_id == pid)?,
@@ -93,6 +94,9 @@ validator contract {
           expect Script(this_script) =
             this_input.output.address.payment_credential
           let this_value: Value = this_input.output.value
+          // only valid utxos holding the nft
+          let is_holding_token: Bool =
+            assets.quantity_of(this_value, this_script, this_datum.pointer) == 1
           when redeemer is {
             Addition(extra) -> {
               // find the output that holds this nft
@@ -107,8 +111,6 @@ validator contract {
                   this_script,
                   this_datum.pointer,
                 )
-              let is_holding_token: Bool =
-                assets.quantity_of(this_value, this_script, this_datum.pointer) == 1
               // add the extra lovelace to this value
               let that_value: Value =
                 this_value
@@ -118,7 +120,8 @@ validator contract {
                       extra,
                     )
               //
-              //
+              // Everything remains constant but the value. Only lovelace can
+              // be added to the UTxO.
               //
               and {
                 // must hold token
@@ -139,16 +142,18 @@ validator contract {
               let BabelFeeDatum {
                 pointer,
                 babel_fee,
-                asset_class: AssetClass { pid, tkn },
+                asset_class: AssetClass { pid, tkn, precision },
                 ..
               } = this_datum
+              // the rate is fixed or oracle derived
               let rate: Int =
                 types.get_babel_rate(
                   babel_fee,
                   reference_inputs,
                   validity_range,
                 )
-              let babel_fee: Int = 1_000_000 * fee / rate
+              // precision will scale the babel fee properly
+              let babel_fee: Int = math.pow(10, precision) * fee / rate
               // find the output that holds this nft
               expect Some(Output {
                 address: Address { payment_credential: Script(that_script), .. },
@@ -157,9 +162,7 @@ validator contract {
                 reference_script,
               }): Option<Output> =
                 search.for_output_by_token(outputs, this_script, pointer)
-              let is_holding_token: Bool =
-                assets.quantity_of(this_value, this_script, pointer) == 1
-              // subtract the fee from this value and add the payment
+              // subtract the fee from this value and add the babel fee
               let that_value: Value =
                 this_value
                   |> assets.add(
@@ -169,7 +172,8 @@ validator contract {
                     )
                   |> assets.add(pid, tkn, babel_fee)
               //
-              //
+              // Everything remains constant but the value. The fee is removed
+              // and the babel fee is added.
               //
               and {
                 // must hold token
@@ -186,8 +190,6 @@ validator contract {
             }
             Remove -> {
               let BabelFeeDatum { keeper, pointer, .. } = this_datum
-              let is_holding_token: Bool =
-                assets.quantity_of(this_value, this_script, pointer) == 1
               if is_holding_token {
                 // pointer token must be burnt, so lets check that no output holds that token
                 let burn_node_token_name: Bool =
@@ -198,7 +200,9 @@ validator contract {
                     },
                   )
                 //
-                // Burn the token and get a signature from the keeper.
+                // Burn the token and get a signature from the keeper. This logic
+                // will allow updates, extraction, and removal. Update and extract
+                // will result in some new pointer.
                 //
                 and {
                   list.has(extra_signatories, keeper)?,

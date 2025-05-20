@@ -18,6 +18,8 @@ pub type BabelFeeMintRedeemer {
 pub type AssetClass {
   pid: PolicyId,
   tkn: AssetName,
+  // most assets are 6 but some have less and that needs to be accounted for during the price calculation
+  precision: Int,
 }
 
 pub type BabelFee {
@@ -53,11 +55,12 @@ pub fn get_babel_rate(
       let feed_price: Int = oracle.get_price(feed_datum)
       let feed_moment: Moment = oracle.get_moment(feed_datum)
       if and {
-        assets.quantity_of(value, feed_pid, feed_tkn) == 1,
-        oracle.is_contained(feed_moment, validity_range),
+        (assets.quantity_of(value, feed_pid, feed_tkn) == 1)?,
+        oracle.is_contained(feed_moment, validity_range)?,
       } {
         feed_price
       } else {
+        // zero values will throw divide by zero errors
         0
       }
     }

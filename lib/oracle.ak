@@ -24,9 +24,6 @@ pub fn is_logical(m: Moment) -> Bool {
 ///
 /// |start--|lower----upper|--end|
 ///
-/// ```aiken
-/// moment.is_contained(datum.moment, this_tx.validity_range)
-/// ```
 pub fn is_contained(m: Moment, vr: ValidityRange) -> Bool {
   when vr.lower_bound.bound_type is {
     // must be finite
