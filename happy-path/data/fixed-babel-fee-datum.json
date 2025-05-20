@@ -11,7 +11,7 @@
       "constructor": 1,
       "fields": [
         {
-          "int": 123
+          "int": 595
         }
       ]
     },
@@ -19,10 +19,10 @@
       "constructor": 0,
       "fields": [
         {
-          "bytes": "0dd131c27bd36c4abee079e09b192575d6651b482aedbc7574cd332e"
+          "bytes": "769c4c6e9bc3ba5406b9b89fb7beb6819e638ff2e2de63f008d5bcff"
         },
         {
-          "bytes": "00324f9dbfd09fdd2e128f6c1abbaedb913e0f1d1d02d1f84addeea9b4d237d3"
+          "bytes": "744e45574d"
         },
         {
           "int": 6
