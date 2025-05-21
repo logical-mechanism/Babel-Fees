@@ -18,7 +18,7 @@ user_address=$(cat ${user_wallet_path}/payment.addr)
 user_pkh=$(${cli} conway address key-hash --payment-verification-key-file ${user_wallet_path}/payment.vkey)
 
 # who gets some ada
-receiver_address="addr_test1qrwejm9pza929cedhwkcsprtgs8l2carehs8z6jkse2qp344c43tmm0md55r4ufmxknr24kq6jkvt6spq60edeuhtf4sn2scds"
+receiver_address="addr_test1qqa9e0qfjgge2r39lxrh4dat6c7s2m23t0tysga9m6pacfjnm243cyjk69v32rkjvwlvpplx5cgfk3jmq9gwncamgf5sg8turc"
 
 # collat wallet
 collat_wallet_path="../wallets/collat-wallet"
@@ -34,7 +34,7 @@ babel_fee_policy_id=$(cat ../../hashes/babel_fees.hash)
 payment_policy_id=$(jq -r '.fields[3].fields[0].bytes' ../data/fixed-babel-fee-datum.json)
 payment_token_name=$(jq -r '.fields[3].fields[1].bytes' ../data/fixed-babel-fee-datum.json)
 
-receiver_amt=1234567
+receiver_amt=7654321
 receiver_output="${receiver_address} + ${receiver_amt}"
 echo Receiver Output: ${receiver_output}
 

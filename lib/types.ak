@@ -10,10 +10,13 @@ pub type BabelFeeSpendRedeemer {
   Remove
 }
 
-pub type BabelFeeMintRedeemer {
+pub type MintType {
   EntryMint
-  LeaveBurn(AssetName)
+  LeaveBurn { tkn: AssetName }
 }
+
+pub type BabelFeeMintRedeemer =
+  List<MintType>
 
 pub type AssetClass {
   pid: PolicyId,

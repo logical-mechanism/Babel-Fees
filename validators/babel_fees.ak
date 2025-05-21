@@ -13,60 +13,28 @@ use cardano/transaction.{
 use search
 use types.{
   Addition, AssetClass, BabelFeeDatum, BabelFeeMintRedeemer,
-  BabelFeeSpendRedeemer, EntryMint, LeaveBurn, Remove, UseFee,
+  BabelFeeSpendRedeemer, Remove, UseFee,
 }
+use validate
 
 validator contract {
   mint(redeemer: BabelFeeMintRedeemer, policy_id: PolicyId, self: Transaction) {
     let Transaction { inputs, outputs, mint, extra_signatories, .. } = self
-    when redeemer is {
-      EntryMint -> {
-        // The token name is based off the first UTxO being spent
-        expect [input, ..]: List<Input> = inputs
-        let tx_id: TransactionId = input.output_reference.transaction_id
-        let tx_idx: Int = input.output_reference.output_index
-        let token_name: AssetName =
-          tx_id |> bytearray.push(tx_idx) |> bytearray.slice(0, 31)
-        // A single token should be minted in this transaction
-        expect [(pid, tkn, amt)]: List<(PolicyId, AssetName, Int)> =
-          mint
-            |> assets.flatten()
-        // find the output that holds this nft
-        expect Some(Output {
-          address: Address { payment_credential: Script(output_hash), .. },
-          value,
-          datum: InlineDatum(output_datum_data),
-          reference_script,
-        }): Option<Output> =
-          search.for_output_by_token(outputs, policy_id, token_name)
-        // we need the keeper and pointer from the babel fee datum
-        expect BabelFeeDatum { keeper, pointer, .. } = output_datum_data
-        // make sure no dust tokens exist, ada is first then the token being minted
-        expect [(_, _, _),
-          (_, _, _)]: List<(PolicyId, AssetName, Int)> = assets.flatten(value)
-        //
-        // The keeper must sign the tx. The pointer token name is
-        // stored in the datum for future use. No reference scripts on the output.
-        // A single pointer token is being minted using the first input as a token
-        // name. The output must be going to this contract.
-        //
-        and {
-          // keeper must sign
-          list.has(extra_signatories, keeper)?,
-          // token name needs to be in the datum
-          (pointer == token_name)?,
-          // the output cant have a ref script
-          option.is_none(reference_script)?,
-          // must be going to this contract
-          (policy_id == output_hash)?,
-          // must mint nft
-          (policy_id == pid)?,
-          (token_name == tkn)?,
-          (1 == amt)?,
-        }
-      }
-      // single burn here
-      LeaveBurn(tkn) -> (( mint |> assets.flatten ) == [(policy_id, tkn, -1)])?
+    expect [input, ..]: List<Input> = inputs
+    let tx_id: TransactionId = input.output_reference.transaction_id
+    let tx_idx: Int = input.output_reference.output_index
+    let token_name: AssetName =
+      tx_id |> bytearray.push(tx_idx) |> bytearray.slice(0, 31)
+    and {
+      validate.validate_babel_pointer(
+        redeemer,
+        token_name,
+        policy_id,
+        mint,
+        outputs,
+        extra_signatories,
+      )?,
+      validate.validate_length_and_uniqueness(mint, policy_id, redeemer)?,
     }
   }
 
