@@ -47,7 +47,7 @@ echo "User UTxO:" ${keeper_utxo}
 babel_fee_token_name=$(jq -r '.fields[1].bytes' ../data/fixed-babel-fee-datum.json)
 babel_fee_asset="-1 ${babel_fee_policy_id}.${babel_fee_token_name}"
 
-jq --arg variable "${babel_fee_token_name}" '.fields[0].bytes=$variable' ../data/burn-redeemer.json | sponge ../data/burn-redeemer.json
+jq --arg variable "${babel_fee_token_name}" '.list[0].fields[0].bytes=$variable' ../data/burn-redeemer.json | sponge ../data/burn-redeemer.json
 
 echo -e "\033[0;36m Gathering Babel Fee UTxO Information  \033[0m"
 ${cli} conway query utxo \
@@ -115,4 +115,4 @@ ${cli} conway transaction sign \
 echo -e "\033[0;36m Submitting \033[0m"
 ${cli} conway transaction submit \
     ${network} \
-    --tx-file ../tmp/tx.signed
+    --tx-file ../tmp/tx.signed | jq

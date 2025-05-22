@@ -56,10 +56,10 @@ rm -fr build/ || true
 echo -e "\033[1;34m\nCompiling Contracts \033[0m"
 
 # remove all traces
-aiken build --trace-level silent --trace-filter user-defined
+# aiken build --trace-level silent --trace-filter user-defined
 
 # keep the traces for testing if required
-# aiken build --trace-level verbose --trace-filter all
+aiken build --trace-level verbose --trace-filter all
 
 # some random string to make the contracts unique
 rand="044203"

@@ -1,3 +1,5 @@
+use aiken/crypto
+
 test fixed_rate_payment_amount_1() {
   // 0.243532 ADA
   let fee: Int = 243_532
@@ -36,4 +38,11 @@ test fixed_rate_payment_amount_4() {
   let babel_fee: Int = 1_000_000 * fee / rate
   // 0.339423 Tokens
   babel_fee == 339_423
+}
+
+test hash_token_name() {
+  let pre_image: ByteArray =
+    #"00211e7857e5088ea0ebfc6ad4f583d74c9f834a2ac7b4caafb7818a6b00cde6"
+  let token_name: ByteArray = crypto.blake2b_256(pre_image)
+  token_name == #"a8715bf86cc1b91390b696ffacf3b3aaef258ad6dbe922af7aaf94e6e00479d4"
 }

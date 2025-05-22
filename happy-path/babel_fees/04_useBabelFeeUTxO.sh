@@ -18,7 +18,8 @@ user_address=$(cat ${user_wallet_path}/payment.addr)
 user_pkh=$(${cli} conway address key-hash --payment-verification-key-file ${user_wallet_path}/payment.vkey)
 
 # who gets some ada
-receiver_address="addr_test1qqa9e0qfjgge2r39lxrh4dat6c7s2m23t0tysga9m6pacfjnm243cyjk69v32rkjvwlvpplx5cgfk3jmq9gwncamgf5sg8turc"
+# receiver_address="addr_test1qqa9e0qfjgge2r39lxrh4dat6c7s2m23t0tysga9m6pacfjnm243cyjk69v32rkjvwlvpplx5cgfk3jmq9gwncamgf5sg8turc"
+receiver_address="addr_test1qrwejm9pza929cedhwkcsprtgs8l2carehs8z6jkse2qp344c43tmm0md55r4ufmxknr24kq6jkvt6spq60edeuhtf4sn2scds"
 
 # collat wallet
 collat_wallet_path="../wallets/collat-wallet"
@@ -207,4 +208,4 @@ ${cli} conway transaction sign \
 echo -e "\033[0;36m Submitting \033[0m"
 ${cli} conway transaction submit \
     ${network} \
-    --tx-file ../tmp/tx.signed
+    --tx-file ../tmp/tx.signed | jq

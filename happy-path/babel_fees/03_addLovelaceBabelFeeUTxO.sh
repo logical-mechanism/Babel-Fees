@@ -123,4 +123,4 @@ ${cli} conway transaction sign \
 echo -e "\033[0;36m Submitting \033[0m"
 ${cli} conway transaction submit \
     ${network} \
-    --tx-file ../tmp/tx.signed
+    --tx-file ../tmp/tx.signed | jq

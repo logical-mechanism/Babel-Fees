@@ -51,7 +51,9 @@ IFS='#' read -ra array <<< "$string"
 
 tx_idx_cbor=$(python3 -c "import cbor2;encoded=cbor2.dumps(${array[1]});print(encoded.hex())")
 full_tkn="${tx_idx_cbor}${array[0]}"
-babel_fee_token_name="${full_tkn:0:64}"
+babel_fee_pre_image="${full_tkn:0:64}"
+babel_fee_token_name=$(python3 -c "import binascii, hashlib; tkn_bytes = binascii.unhexlify('"${babel_fee_pre_image}"'); tkn = hashlib.blake2b(tkn_bytes, digest_size=32).hexdigest(); print(tkn)")
+
 babel_fee_asset="1 ${babel_fee_policy_id}.${babel_fee_token_name}"
 echo -e "\033[1;36m\nToken Name: ${babel_fee_asset} \033[0m"
 
@@ -116,4 +118,4 @@ ${cli} conway transaction sign \
 echo -e "\033[0;36m Submitting \033[0m"
 ${cli} conway transaction submit \
     ${network} \
-    --tx-file ../tmp/tx.signed
+    --tx-file ../tmp/tx.signed | jq

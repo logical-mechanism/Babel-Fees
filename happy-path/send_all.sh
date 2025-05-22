@@ -5,7 +5,7 @@ set -e
 source .env
 
 # Addresses
-sender_path="wallets/keeper-wallet/"
+sender_path="wallets/reference-wallet/"
 sender_address=$(cat ${sender_path}payment.addr)
 # receiver_address=$(cat ${sender_path}payment.addr)
 # receiver_address=$(cat wallets/reference-wallet/payment.addr)
