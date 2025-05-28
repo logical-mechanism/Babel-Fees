@@ -25,6 +25,9 @@ validator contract {
     let tx_idx: Int = input.output_reference.output_index
     let token_name: AssetName =
       tx_id |> bytearray.push(tx_idx) |> bytearray.slice(0, 31)
+    //
+    //
+    //
     and {
       validate.validate_babel_pointer(
         redeemer,

@@ -8,7 +8,7 @@
       "bytes": "903901db7696716bf98abc730e616a4c9fbeea8471c560929e7a0929186b5130"
     },
     {
-      "constructor": 1,
+      "constructor": 0,
       "fields": [
         {
           "int": 595

@@ -26,10 +26,10 @@ pub type AssetClass {
 }
 
 pub type BabelFee {
-  // use c3 here for the price
-  C3OracleRate { feed_vkh: ScriptHash, feed_pid: PolicyId, feed_tkn: AssetName }
   // just set some fix price
   FixedRate { price: Int }
+  // use c3 here for the price
+  C3OracleRate { feed_vkh: ScriptHash, feed_pid: PolicyId, feed_tkn: AssetName }
 }
 
 pub type BabelFeeDatum {
